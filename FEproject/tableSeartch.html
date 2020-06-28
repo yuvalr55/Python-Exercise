@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>table search</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body>
+<div>
+    <label>Path to words file:
+        <input type="text" id="pathWordsFile" placeholder="Enter a 'words file' path...">
+    </label>
+    <label>Path to directory:
+        <input type="text" id="pathDirectory" placeholder="Enter a 'directory' path...">
+    </label>
+    <label>
+        <input type="submit" value="search" onclick="post()">
+    </label>
+</div>
+<div>
+    <table>
+    </table>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+<script>
+    function post() {
+        const pathWordsFile = document.getElementById("pathWordsFile").value;
+        const pathDirectory = document.getElementById("pathDirectory").value;
+        axios({
+            method: 'post',
+            url: 'http://127.0.0.1:5000/post',
+            data: {
+                "pathWordsFile": pathWordsFile,
+                "pathDirectory": pathDirectory
+            }
+        })
+            .then(function (response) {
+                addRows(response)
+
+            })
+
+            .catch(function (error) {
+                console.log(error);
+            });
+
+    }
+
+
+    function addRows(response) {
+        let data = response.data
+        console.log(response.data)
+        const rows = []
+        for (let i = 0; i < data.length; i++) {
+            rows.push({"words": data[i][0], "counter": data[i][1]});
+        }
+
+        $(document).ready(function () {
+            let html = "<table>";
+            html += "<th>Search words</td>";
+            html += "<th>count</td>";
+
+            for (let i = 0; i < rows.length; i++) {
+                html += "<tr>";
+                html += "<td>" + rows[i].words + "</td>";
+                html += "<td>" + rows[i].counter + "</td>";
+                html += "</tr>";
+
+            }
+            html += "</table>";
+            $("table").html(html);
+        });
+    }
+</script>
+
+</body>
+</html>
